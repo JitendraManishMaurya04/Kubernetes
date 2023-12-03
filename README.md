@@ -1,11 +1,11 @@
 # Kubernetes (K8S)
 
-## Kubernetes is an open source container ORCHESTRATION tool.
+## Kubernetes is an open source container Orchestration tool.
   It is developed by GOOGLE
   It helps in the coordination & management of multiple containerized applications. 
   It helps managing it in different deployment environments.
   
-## WHY Kubernetes:
+## Why Kubernetes:
 	-> Rise in the use of Microservices and moving away from Monolithic Applications
 	-> Increased usage of Containers which has led to managing 100's of containers in different environments.
 	-> This led to have a container ORCHESTRATION technology.
@@ -160,7 +160,7 @@
 			kubectl DELETE -f {filename.yaml}
 		
 			
-## YAML CONFIG FILE
+## YAML Config File
 	-> Contains 3 main parts in a file
 		 1) metadata
 		 2) specification(spec)
@@ -173,7 +173,7 @@
 	echo -n 'password' | base64
 
 
-## Steps to connect MONGODB and MONGO-EXPRERSS
+## Steps to connect MONGODB and MONGO-EXPRESS
 	1) Create YAML file for MONGO-DB Deployment
 	2) Create YAML file for MONGO-DB Secret
 	3) Add required secret Reference fields in MONGO-DB deployment file

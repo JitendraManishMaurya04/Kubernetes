@@ -1,6 +1,6 @@
-# Kubernetes (K8S)
+# Kubernetes(K8S)
 
-## Kubernetes is an open source container Orchestration tool.
+## Kubernetes is an open source container ORCHESTRATION tool.
   It is developed by GOOGLE
   It helps in the coordination & management of multiple containerized applications. 
   It helps managing it in different deployment environments.
@@ -33,7 +33,7 @@
 				  Each POD contains a "pause" container also known as sandbox container which holds network namespace(netns).
 				  pause container enables communication between containers. When a container dies and recreated it will hold the IP-address. But if the POD itself dies,the IP-Address is re-allocated.
 	
-	->SERVICE: Its a STATIC/PERMANENT IP-ADDRESS, that can be attched to each POD. 
+	->SERVICE: Provides a STATIC/PERMANENT IP-ADDRESS, that can be attched to each POD. 
 			   Life-cycle of POD and SERVICE are not connected. So, even if a POD is recreated, the SERVICE and ITS IP-ADDRESS will stay.
 			   It also acts as a LOAD-BALANCER. The SERVICE gets the incoming requests from the INGRESS and forwards to POD.
 			
@@ -47,8 +47,8 @@
 	->Secret: Its similar to ConfigMap, but used to store secret data in base64 encoded format.
 			   Its connected to POD to allow using the secret stored in Secret
 			   
-	->VOLUMES: A physical storage attached to a POD. It cna be on a local-machine(NODE) or on remote location/outside of K8S CLUSTER.
-	           K8S CLUSTER doesnt manage data persistance. A user/admin is responsible for backing/replicating of data.
+	->VOLUMES: A physical storage attached to a POD. It can be on a local-machine(NODE) or on remote location/outside of K8S CLUSTER.
+	           K8S CLUSTER does'nt manage data persistance. A user/admin is responsible for backing/replicating of data.
 			   
 	->DELOYMENT: Its a BLUEPRINT for deploying PODS.
 	             It provides ABTRACTION over PODS.
@@ -173,7 +173,7 @@
 	echo -n 'password' | base64
 
 
-## Steps to connect MONGODB and MONGO-EXPRESS
+## Steps to connect MONGODB and MONGO-EXPRERSS
 	1) Create YAML file for MONGO-DB Deployment
 	2) Create YAML file for MONGO-DB Secret
 	3) Add required secret Reference fields in MONGO-DB deployment file
@@ -210,8 +210,8 @@
 	-> Can solve Conflicts while working with multi-team which can have config with same name.
 	-> Reource sharing between different namespace
 	-> Access and Resource limit
-	-> Cant use many resources present in 1-namespace into another like ConfigMap
-	-> Cant Isolate or put some resources ina namespace like NODE, VOLUMES
+	-> Cant be used by multiple resources present different namespace like ConfigMap
+	-> Cant isolate or put some resources in a namespace like NODE, VOLUMES
 	-> Can have multiple namespace in a cluster. Can think of it as a virtual cluster in K8s cluster
 
 	=>Command to get namespaces
@@ -240,7 +240,7 @@
 ## EXTERNAL SERVICE VS INGRESS:
 	-> External service should be used only for quick testing purpose.
 	-> while accessing any application using external service http://externalIP:nodePort format is used.
-	-> while using Ingress a proper domain name url is used.
+	-> while using Ingress a proper domain name URL is used.
 	
 	#Configuring Ingress
 		-> A Ingress config yaml file is required to be deployed.
@@ -254,5 +254,111 @@
 		
 	#Flowdiagram using INGRESS:
 		Proxy-Server/Load-Balancer => Ingress-Controller => App-Ingress-Component/Yaml Config File Rule Validation => App-Internal-Service
-
+		
+		
+## HELM & HELM-CHARTS
+		#HELM:	
+				1) Its a package manager for K8S.
+				   Used for packaging group of YAML files and distributing them in public or private repositories.
+				2) Can be used as a TEMPLATING ENGINE
+					Defines a common BLUEPRINT/ TEMPLATE FILE
+					Dynamic values are replaced by placeholders & this values can come from CMD line(--set flag) or values.yaml file
+					## Below are two files are required for this use case, one is a Template file & other a Values file.
+						-> pod-depl-template.yaml
+						-> Value.yaml					
+				3) Can also be used where same application is deployed across different environments
+				4) Release Management
+					When working with different release, HELM provides a INSATLL/UPDATE/ROLLBACK feature
+						helm install <chart-name>
+						helm upgrade <chart-name>
+						helm rollback <chart-name>
+					HELM v2 -> Contains CLIENT - SERVER(TILLER) Model
+					HELM v3 -> SERVER(TILLER) is not present anymore in this version
+				
+				
+		#HELM-CHARTS:
+				-> Its a bundle of YAML files.
+				-> Can Download and use already existing HELM-CHARTS created by others.
+				-> Create you own HELM-CHARTS with HELM and can be pushed to a HELM Repository for making is available for others.
+				-> Can get HELM-CHARTS from HELM HUB
+				-> Below command can be used to look for charts
+					helm search <keyword>
+				-> Command to INSTALL a HELM CHART
+					helm install <chart-name>
+				-> Command to INSTALL a HELM CHART by overiding the values.yaml file with my-values.yaml file
+					helm install --values=my-values.yaml <chart-name>
+				-> Command to set a values parameter via CMD line
+					helm install --set version=2.0.0
+					
+## K8S VOLUMES		
+	-> A physical storage attached to a POD. It can be on a local-machine(NODE) or on remote location/outside of K8S CLUSTER.
+	-> K8S CLUSTER does'nt manage data persistance. A user/admin is responsible for backing/replicating of data.
+	-> 3 Volume Types:
+		1) Persistent Volume (PV)
+		2) Persistent Volume Claim (PVC)
+		3) Storage Class (SC)
 	
+	->Storage Requirements:
+		1) Storage that doesn't depend upon POD life-cycle.
+		2) Storage must be available to all NODES.
+		3) Storage needs to survive even if CLUSTER crashes.
+		
+	###Persistent Volume (PV):
+	    Its not NAMESPACED.
+		Accessible to whole cluster.
+		
+	###Persistent Volume Claim (PVC)
+		Its NAMESPACED.
+		Its used to claim the PV-volumes, which means an application has to claim PV-volumes using PVC-component
+		Based on the Criteria i.e volume size and access Modes,defined in a PVC yaml file, a PV-Volume is assigned to the application.
+		FLOW-DIAGRAM:
+			POD Req Volume through PVC -> PVC tries to find a Volume in CLUSTER -> Volume has the actual storage backend
+		
+	###Storage Class (SC)
+		Scenario where 100's of application are trying to claim a volume, it becomes difficult for admin to manually create 100's of PV.
+		This issue is resolved by SC-Component and makes the process more efficient.
+		SC provisions PV-Columes dynamically when PVC claims/requests it.
+		FLOW-DIAGRAM:
+			POD Req Volume through PVC -> PVC Request storage from SC -> SC creates PV that meets the need of Claim(PVC).
+			
+			
+## StatefulSet
+		Used for stateful applications.
+		Appliations like DB, Apps that stores data
+		Deployed using StatefulSet instead of Deployments
+		
+		### Deployment vs StatefulSet
+				In StatefulSet,Replica POD's are not Identical. Each POD has its own identity i.e POD-Identity.
+				StatefulSet Apps, Cant be randomly address or can't be created/deleted at same time.
+				While scaling DB apps: 
+					1) Node-1 contains both Read/Write Access whereas Rest Node only has Read Access to avoid data in-consistency.
+					2) Node-1 acts as MASTER wheras rest acts as Worker.
+					3) While scaling UP or DOWN the new POD Replicates the Data from Last POD. POD Deletion also happens one by one   from back.
+					4) Whenever a new data is inserted/updated/deleted, Replica POD syncrhronizes and refreshes there data.
+					5) Each POD contains its own physical storage i.e Persistent Volume(PV), but the data used is same.
+					6) For data persistance for StatefulSet Apps, PV should be used and that also outside the Cluster to avoid data loss.
+					7) InStatefulSet, LoadBalancer service is used same as Deployemnt, but each Node/Pod also has its own individual service name.
+					8)When a StatefulSet POD restarts, due to Predictable POD-Name(eg. mysql-0, mysql-1) and fixed Individual DNS name (mysql-0.svc2, mysql-1.sv2) ,its IP-Address changes but name and endpoint stays same
+					
+
+## K8S Services
+		-> In K8S, each POD has its own IP-Address, but POD's are ephemeral i.e POD are destroyed frequently. So, when a POD restarts a new IP-address is allocated. So it becomes difficult to work with POD-IP's.
+		-> Services provides below features along with overcoming above issue:
+			1) Static/Permanent Ip
+			2) Load Balancing
+			3) Loosly Coupled
+			4) Can be used Within or Outside cluster
+		-> Types of Services:
+			1) Cluster IP Services
+			2) Multi-Port Services
+			3) Headless Services
+				When Client wants to communicate with a POD directly.
+				Use Case- StatefulSet application like DB which has POD-Identity. 
+						  By Setting 'ClusterIP: None' in  Service under Spec field. Then doing a DNS lookupto get list of POD IP-Addresses and use that to communicate to specific one
+			4) NodePort Services
+				Used for External services where we can define a nodePort field ranging from 30000 to 32767
+				Its an Extension of ClusterIP Service
+			5) LoadBalancer Services
+				Can use an external loadbalancer from Cloud Provider to get the request at a defined nodePort of Loadbalancer-Service
+				Its an Extension of NodePort Service
+		
